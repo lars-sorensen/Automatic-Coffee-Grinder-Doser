@@ -113,6 +113,7 @@ int probeGrindTime        = 100;                               // time for calib
 #define STEP3             11    // wizard: time input depending on probe grindig
 #define STEP4             12    // wizard: factor automatic (yes/no)
 #define STEP5             13    // wizard: factor input
+#define PAUSE             14    // Screensaver
 
 // Quickbuttons
 #define QUICKBUTTONS 2          // number of programable quickbuttons
