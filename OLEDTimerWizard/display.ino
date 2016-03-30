@@ -104,13 +104,40 @@ void draw() {
   byte boxWidth = 0;
   if ( stateIdx == SJSET ) boxWidth = display_width;
   if ( stateIdx == SJOFF ) boxWidth = 0;
-  if ( stateIdx == SJON ) boxWidth = display_width * ( 1 - float(currentTime)/float(doseTime[doseIdx]) );
-  if ( stateIdx != WIZARD ) { 
-    u8g.drawFrame(0,0,display_width,10);
+  if ( stateIdx == SJON ) { u8g.drawFrame(0,0,display_width,10); boxWidth = display_width * ( 1 - float(currentTime)/float(doseTime[doseIdx]) );}
+  if ( stateIdx != WIZARD || stateIdx != PAUSE) { 
+    //u8g.drawFrame(0,0,display_width,10);
     u8g.drawBox(0,0,boxWidth,10);
   }
   
   switch (stateIdx) {
+
+    case PAUSE:
+
+    u8g.setFont(u8g_font_fub11); 
+    u8g.setPrintPos(64, 30);
+    u8g.print("Pause");
+
+    
+//    if (doseIdx != DOSEM) {
+//    u8g.drawXBMP( 0, 25, cup_width, cup_height, cup_bits);  // small cup icon
+//    u8g.setColorIndex(0);
+//    u8g.setPrintPos(12, 48);
+//    u8g.print(doseIdx);
+//    u8g.setColorIndex(1);
+//    // show coffee portion
+//    u8g.setFont(u8g_font_fub11); 
+//    u8g.setPrintPos(64, 30);
+//    u8g.print(portion_name[doseIdx-1]);
+//    u8g.setFont(u8g_font_fub20);     
+//    // dose time
+//    u8g.setFont(u8g_font_fub20);
+//    u8g.setPrintPos( 64, 64); 
+//    DisplayNumber("s");
+//    break;
+//  }
+
+
   
   case SJSET:
     if (doseIdx != DOSEM) {

@@ -126,8 +126,10 @@ void buttonAction() {
   
   // quickbutton 1 pressed
   else if ( (stateIdx == SJOFF) && (quickButton1.clicks == 1) ) {
-          doseIdx = quickButtonPortion[QB1];
-          onRelay();
+    stateIdx = PAUSE;
+          //doseIdx = quickButtonPortion[QB1];
+          
+          //onRelay();
         }
   
   // quickbutton 2 pressed
