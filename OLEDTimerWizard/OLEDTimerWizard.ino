@@ -82,8 +82,8 @@ long doseTime[]           = { 3000, 35, 70, 85, 105, 140, 0 };  // time in 1/10s
 long factor[]             = { 0, 116, 171, 116, 150 };         // factor pre-selection (usefull when skipping grind calibration). First position is a placeholder because of the manual grind mode!
 byte dose[]               = { 0, 70, 140, 180, 210, 280 };      // pre-selected doses. First position is a placeholder because of the manual grind mode!
 byte quickButtonPortion[] = { 1, 2 };                          // pre-selection quickbuttons
-char *portion_name[]      = {" 7g", " 14g", "18g", "21g", "28g" }; // name of portions (the weight in gram) which is shown on display
-int probeGrindTime        = 100;                               // time for calibration grinding (e.g. 100 = 10s)
+char *portion_name[]      = {"Flush", " 16g", "18g", "21g", "28g" }; // name of portions (the weight in gram) which is shown on display
+int probeGrindTime        = 50;                               // time for calibration grinding (e.g. 100 = 10s)
 
 // *** DEBUGING ***
 
@@ -192,7 +192,7 @@ void setup() {
   readSettingsEEPROM( eepromVersionNumber);
 
   // encoder parameter
-  encoderIdleTime = millis() + 1000;
+  encoderIdleTime = millis() + 50;
   encoderIdleDuration = 5;
   encoderVal = 0;
 

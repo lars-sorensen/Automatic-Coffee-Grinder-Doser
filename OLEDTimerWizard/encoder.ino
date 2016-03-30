@@ -34,6 +34,12 @@ void encoderAction()
         break;
         }
    
+        case PAUSE:       // Exit screensaver and return to normal operation mode
+        //  chooser(1,0);
+          stateIdx = SJOFF;
+         // chooser(1,0);
+        break;
+        
         case SJOFF:       // normal operation mode
           chooser(1,0);
         break;

@@ -104,9 +104,10 @@ void draw() {
   byte boxWidth = 0;
   if ( stateIdx == SJSET ) boxWidth = display_width;
   if ( stateIdx == SJOFF ) boxWidth = 0;
-  if ( stateIdx == SJON ) { u8g.drawFrame(0,0,display_width,10); boxWidth = display_width * ( 1 - float(currentTime)/float(doseTime[doseIdx]) );}
+  if ( stateIdx == SJON ) { u8g.drawFrame(0,0,display_width,10); 
+    boxWidth = display_width * ( 1 - float(currentTime)/float(doseTime[doseIdx]) );}
   if ( stateIdx != WIZARD || stateIdx != PAUSE) { 
-    //u8g.drawFrame(0,0,display_width,10);
+  //  u8g.drawFrame(0,0,display_width,10);
     u8g.drawBox(0,0,boxWidth,10);
   }
   
@@ -135,7 +136,9 @@ void draw() {
 //    u8g.setPrintPos( 64, 64); 
 //    DisplayNumber("s");
 //    break;
-//  }
+//
+break;
+
 
 
   
@@ -163,8 +166,7 @@ void draw() {
     u8g.setColorIndex(1);
     u8g.setFont(u8g_font_fub11);
     u8g.setPrintPos( 2, 25); 
-    u8g.print("Definer knap 1");    
-    
+    u8g.print("Definer knap 1");
     u8g.setFont(u8g_font_fub20);
     u8g.setPrintPos( 44, 54); 
     u8g.print(portion_name[doseIdx-1]);
@@ -177,7 +179,6 @@ void draw() {
     u8g.setFont(u8g_font_fub11);
     u8g.setPrintPos( 2, 25); 
     u8g.print("Definer knap 2");    
-    
     u8g.setFont(u8g_font_fub20);
     u8g.setPrintPos( 44, 54); 
     u8g.print(portion_name[doseIdx-1]);

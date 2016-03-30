@@ -119,6 +119,13 @@ void buttonAction() {
           offRelay();
         }
   
+  // PAUSE -> OFF
+  else if ( (stateIdx == PAUSE) && (encoderButton.clicks == 1) ) {
+          stateIdx = SJOFF;
+        }
+  
+  
+  
   // OFF -> ON
   else if ( (stateIdx == SJOFF) && (encoderButton.clicks == 1) ) {
           onRelay();
@@ -127,13 +134,13 @@ void buttonAction() {
   // quickbutton 1 pressed
   else if ( (stateIdx == SJOFF) && (quickButton1.clicks == 1) ) {
     stateIdx = PAUSE;
-          //doseIdx = quickButtonPortion[QB1];
-          
-          //onRelay();
+         // doseIdx = quickButtonPortion[QB1];
+         // onRelay();
         }
   
   // quickbutton 2 pressed
-  else if ( (stateIdx == SJOFF) && (quickButton2.clicks == 1) ) {
+  else if ( (stateIdx == SJOFF || stateIdx == PAUSE) && (quickButton2.clicks == 1) ) {
+          stateIdx = SJOFF;
           doseIdx = quickButtonPortion[QB2];
           onRelay();
         }
