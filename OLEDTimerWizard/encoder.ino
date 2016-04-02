@@ -35,9 +35,9 @@ void encoderAction()
         }
    
         case PAUSE:       // Exit screensaver and return to normal operation mode
-        //  chooser(1,0);
-          stateIdx = SJOFF;
-         // chooser(1,0);
+           #ifdef screensaver
+          offPause();
+          #endif
         break;
         
         case SJOFF:       // normal operation mode

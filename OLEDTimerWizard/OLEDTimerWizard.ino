@@ -87,7 +87,7 @@ int probeGrindTime        = 50;                               // time for calibr
 
 // *** DEBUGING ***
 
-//#define DEBUG          // remove leading "//" in order to activate serial monitor
+#define DEBUG          // remove leading "//" in order to activate serial monitor
 //#define DEBUGBUTTON
 //#define DEBUGEEPROM
 //#define DEBUGENCODER
@@ -166,9 +166,24 @@ ClickButton encoderButton(BTN_PIN, LOW, CLICKBTN_PULLUP);
 ClickButton quickButton1(QBTN_PIN_1, LOW, CLICKBTN_PULLUP);
 ClickButton quickButton2(QBTN_PIN_2, LOW, CLICKBTN_PULLUP);
 
+// screensaver - uncomment the following line to activate screensaver
+#define screensaver
+
+//settings for screensaver
+bool refreshOnPause = false;
+#ifdef screensaver
+int screensaverStartTime = 1; // Minuttes of idle time before activating screensaver
+volatile long screensaverIdleTime = 0; // resetting the idle time
+
+unsigned long previousMillis = 0;
+const long interval = 6000;
+
+
+#endif
+
 /* SET UP */
 void setup() {
-
+  
   pinMode(PINtoRESET, INPUT);    // Just to be clear, as default is INPUT. Not really needed.
   digitalWrite(PINtoRESET, LOW); // Prime it, but does not actually set output.
   // Does disable 10K pull Up, but who cares.
@@ -214,6 +229,9 @@ void setup() {
   MsTimer2::set(1, timerISR);  // period to check relay state: every 100ms
   MsTimer2::start();
   timerIdleTime = 0;
+//  #ifdef screensaver
+// screensaverIdleTime = 0;
+//  #endif
 
   // Setup wizard
   if (!wizardDone) {
@@ -233,19 +251,46 @@ void setup() {
 /* MAIN */
 void loop() {
 
+//  unsigned long currentMillis = millis();
+//
+//  if (currentMillis - previousMillis >= interval) {
+//    // save the last time you blinked the LED
+//    previousMillis = currentMillis;
+//
+//onPause();
+//
+//  }
+
   // rebuild display
   if ( refreshDisplay ) {
     refreshDisplay = false;
     drawDisplay();
   }
+  if (refreshOnPause) {
+    refreshOnPause = false;
+    Serial.println("nu går vi ind i onPause");
+    onPause();
+  }
 }
 
 /* timer ISR to execute the thread controller*/
 void timerISR() {
-
   // button
   buttonAction();
 
+/* Update screensaver */
+#ifdef screensaver
+  if (stateIdx != PAUSE) {
+    screensaverIdleTime = screensaverIdleTime + 10;
+#ifdef DEBUG
+#endif
+    if (screensaverIdleTime >= (screensaverStartTime*60) )
+      { screensaverIdleTime = 0;
+      refreshOnPause = true;
+      }
+  }
+  #endif
+  
   // timer
   long time = millis();
   if ( time > timerIdleTime ) {
@@ -267,10 +312,19 @@ void timerAction() {
       offRelay();
     }
   }
-
-
 }
 
+#ifdef screensaver 
+  void onPause() {
+    stateIdx = PAUSE;
 
+Serial.println("onPause er blevet kaldt");
 
-
+    //fade light to 0
+  }
+  void offPause() {
+    Serial.println("offPause");
+    stateIdx = SJOFF;   
+    //fade light to 140
+  }
+#endif
