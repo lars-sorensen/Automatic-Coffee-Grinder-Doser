@@ -87,7 +87,7 @@ int probeGrindTime        = 50;                               // time for calibr
 
 // *** DEBUGING ***
 
-#define DEBUG          // remove leading "//" in order to activate serial monitor
+//#define DEBUG          // remove leading "//" in order to activate serial monitor
 //#define DEBUGBUTTON
 //#define DEBUGEEPROM
 //#define DEBUGENCODER
@@ -129,6 +129,17 @@ int probeGrindTime        = 50;                               // time for calibr
 #define DOSE4 4                 // dose 4 e.g. 21g
 #define DOSE5 5                 // dose 5 e.g. 28g
 
+
+// Screensaver
+// Uncomment the following line to activate screensaver:
+#define screensaver
+#ifdef screensaver
+boolean isPaused = false;
+const long interval = 1;        // Antal minutter inden screensaver
+unsigned long previousMillis = 0;
+#endif
+
+
 volatile int stateIdx = 0;      // state-index      - controlls the operation mode
 volatile int doseIdx = 1;       // dose-index       - controlls which dose will be processed
 volatile int setupStateIdx = 0; // setupstate-index - controlls the setup mode
@@ -161,25 +172,12 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NO_ACK);  // I2C
 #define display_height 64
 volatile boolean refreshDisplay = true;
 
+
 // button
 ClickButton encoderButton(BTN_PIN, LOW, CLICKBTN_PULLUP);
 ClickButton quickButton1(QBTN_PIN_1, LOW, CLICKBTN_PULLUP);
 ClickButton quickButton2(QBTN_PIN_2, LOW, CLICKBTN_PULLUP);
 
-// screensaver - uncomment the following line to activate screensaver
-#define screensaver
-
-//settings for screensaver
-bool refreshOnPause = false;
-#ifdef screensaver
-int screensaverStartTime = 1; // Minuttes of idle time before activating screensaver
-volatile long screensaverIdleTime = 0; // resetting the idle time
-
-unsigned long previousMillis = 0;
-const long interval = 6000;
-
-
-#endif
 
 /* SET UP */
 void setup() {
@@ -207,7 +205,7 @@ void setup() {
   readSettingsEEPROM( eepromVersionNumber);
 
   // encoder parameter
-  encoderIdleTime = millis() + 50;
+  encoderIdleTime = millis() + 100;
   encoderIdleDuration = 5;
   encoderVal = 0;
 
@@ -251,25 +249,14 @@ void setup() {
 /* MAIN */
 void loop() {
 
-//  unsigned long currentMillis = millis();
-//
-//  if (currentMillis - previousMillis >= interval) {
-//    // save the last time you blinked the LED
-//    previousMillis = currentMillis;
-//
-//onPause();
-//
-//  }
+#ifdef screensaver
+pauseTimer();
+#endif
 
   // rebuild display
   if ( refreshDisplay ) {
     refreshDisplay = false;
     drawDisplay();
-  }
-  if (refreshOnPause) {
-    refreshOnPause = false;
-    Serial.println("nu går vi ind i onPause");
-    onPause();
   }
 }
 
@@ -277,19 +264,6 @@ void loop() {
 void timerISR() {
   // button
   buttonAction();
-
-/* Update screensaver */
-#ifdef screensaver
-  if (stateIdx != PAUSE) {
-    screensaverIdleTime = screensaverIdleTime + 10;
-#ifdef DEBUG
-#endif
-    if (screensaverIdleTime >= (screensaverStartTime*60) )
-      { screensaverIdleTime = 0;
-      refreshOnPause = true;
-      }
-  }
-  #endif
   
   // timer
   long time = millis();
@@ -307,24 +281,48 @@ void timerAction() {
   // check currentTime
   if ( stateIdx == SJON ) {
     currentTime--;
+
+      #ifdef screensaver
+      previousMillis = millis();
+      #endif
+    
     refreshDisplay = true;
     if (currentTime < 0) {
       offRelay();
+ 
     }
   }
 }
 
 #ifdef screensaver 
+
+  void pauseTimer() {
+  
+    if (isPaused !=true || stateIdx != SJON || stateIdx !=WIZARD) {
+      // || stateIdx !=SJSET || stateIdx !=QB1SET || stateIdx !=QB2SET
+      //Ovenstående skal kun være med, hvis man ikke ønsker pause, mens man er ved at indstille noget.
+  
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval*3000) {
+      previousMillis = currentMillis;
+      
+    onPause();
+    
+       }
+     }
+   }
+
+
   void onPause() {
+    isPaused = true;
     stateIdx = PAUSE;
-
-Serial.println("onPause er blevet kaldt");
-
     //fade light to 0
+    refreshDisplay = true;
   }
   void offPause() {
-    Serial.println("offPause");
-    stateIdx = SJOFF;   
+    isPaused = false;
+    stateIdx = SJOFF;
+    previousMillis = millis();
     //fade light to 140
   }
 #endif

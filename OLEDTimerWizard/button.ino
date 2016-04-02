@@ -118,13 +118,13 @@ void buttonAction() {
   if ( (stateIdx == SJON) && (encoderButton.clicks == 1) ) {
           offRelay();
         }
-
-   // PAUSE -> OFF
+  
+  // PAUSE -> OFF
+  #ifdef screensaver
   else if ( (stateIdx == PAUSE) && (encoderButton.clicks == 1) ) {
-          #ifdef screensaver
           offPause();
-          #endif
         }
+  #endif
   
   
   
@@ -135,21 +135,35 @@ void buttonAction() {
   
   // quickbutton 1 pressed
   else if ( (stateIdx == SJOFF) && (quickButton1.clicks == 1) ) {
-          #ifdef screensaver
-          onPause();
-          #endif
-         // doseIdx = quickButtonPortion[QB1];
-         // onRelay();
+//          #ifdef screensaver
+//          onPause();
+//          #endif
+         doseIdx = quickButtonPortion[QB1];
+         onRelay();
         }
-  
-  // quickbutton 2 pressed
-  else if ( (stateIdx == SJOFF || stateIdx == PAUSE) && (quickButton2.clicks == 1) ) {
-          #ifdef screensaver
+
+  #ifdef screensaver 
+  // quickbutton 1 pressed when paused
+  else if ( ( stateIdx == PAUSE) && (quickButton1.clicks == 1) ) {
           offPause();
-          #endif
+        //  doseIdx = quickButtonPortion[QB1];
+        //  onRelay();
+        }
+  #endif
+
+  // quickbutton 2 pressed
+  else if ( (stateIdx == SJOFF) && (quickButton2.clicks == 1) ) {
+        //  offPause();
           doseIdx = quickButtonPortion[QB2];
           onRelay();
         }
+        
+  #ifdef screensaver
+    // quickbutton 2 pressed when paused
+    else if ( ( stateIdx == PAUSE) && (quickButton2.clicks == 1) ) {
+            offPause();     
+          }
+  #endif   
   
   // OFF -> SET
   else if ( (stateIdx == SJOFF) && (doseIdx != DOSEM)&& (encoderButton.clicks == -1) ) {
