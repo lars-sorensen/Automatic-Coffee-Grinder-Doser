@@ -1,4 +1,10 @@
 /*
+  Fades a single LED up and down using LED Fader.
+  Connect an LED to pin 3
+*/
+
+
+/*
 
  La Pavoni Zip Timer(version 05/28/2015) by Ralf Jardon (user "Richy" @ http://www.kaffee-netz.de )
  
@@ -60,6 +66,7 @@
 #include <U8glib.h>       // see above
 #include <avr/eeprom.h>   // enable eeprom read and write
 #include <stdio.h>
+#include <LEDFader.h>
 
 // *** BEGIN OF CONFIG SECTION ************************************************************************************************************************
 // define arduino pins
@@ -129,17 +136,6 @@ int probeGrindTime        = 50;                               // time for calibr
 #define DOSE4 4                 // dose 4 e.g. 21g
 #define DOSE5 5                 // dose 5 e.g. 28g
 
-
-// Screensaver
-// Uncomment the following line to activate screensaver:
-#define screensaver
-#ifdef screensaver
-boolean isPaused = false;
-const long interval = 1;        // Antal minutter inden screensaver
-unsigned long previousMillis = 0;
-#endif
-
-
 volatile int stateIdx = 0;      // state-index      - controlls the operation mode
 volatile int doseIdx = 1;       // dose-index       - controlls which dose will be processed
 volatile int setupStateIdx = 0; // setupstate-index - controlls the setup mode
@@ -178,18 +174,46 @@ ClickButton encoderButton(BTN_PIN, LOW, CLICKBTN_PULLUP);
 ClickButton quickButton1(QBTN_PIN_1, LOW, CLICKBTN_PULLUP);
 ClickButton quickButton2(QBTN_PIN_2, LOW, CLICKBTN_PULLUP);
 
+// Screensaver
+// Uncomment the following line to activate screensaver:
+#define screensaver
+#ifdef screensaver
+boolean isPaused = false;
+const long interval = 15;        // Antal sekunder inden screensaver
+unsigned long previousMillis = 0;
+#endif
+
+// LIGHT
+// uncomment the following line to activate light control
+#define LIGHT
+#ifdef LIGHT
+#define LED_PIN 10
+
+#define FADE_TIME 3000
+
+#define DIR_UP 1
+#define DIR_DOWN -1
+
+
+LEDFader led;
+int direction = DIR_UP;
+#endif
+
 
 /* SET UP */
 void setup() {
-  
+  #ifdef LIGHT
+    led = LEDFader(LED_PIN);
+    onLight();
+  #endif
   pinMode(PINtoRESET, INPUT);    // Just to be clear, as default is INPUT. Not really needed.
   digitalWrite(PINtoRESET, LOW); // Prime it, but does not actually set output.
   // Does disable 10K pull Up, but who cares.
   // debugging
-#ifdef DEBUG
-  Serial.begin(9600);
-  Serial.println("Arduino is ready!");
-#endif
+  #ifdef DEBUG
+    Serial.begin(9600);
+    Serial.println("Arduino is ready!");
+  #endif
 
   // relay
   pinMode(RELAY_PIN, OUTPUT);
@@ -246,9 +270,15 @@ void setup() {
   //stateIdx = SJOFF; drawDisplay();
 }
 
+
+
+
 /* MAIN */
 void loop() {
-
+#ifdef LIGHT
+led.update();
+#endif
+  
 #ifdef screensaver
 pauseTimer();
 #endif
@@ -288,6 +318,10 @@ void timerAction() {
     
     refreshDisplay = true;
     if (currentTime < 0) {
+      #ifdef LIGHT
+        direction = DIR_DOWN;
+        led.fade(50, 10000);
+      #endif
       offRelay();
  
     }
@@ -303,7 +337,7 @@ void timerAction() {
       //Ovenstående skal kun være med, hvis man ikke ønsker pause, mens man er ved at indstille noget.
   
     unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= interval*3000) {
+    if (currentMillis - previousMillis >= interval*1000) {
       previousMillis = currentMillis;
       
     onPause();
@@ -317,12 +351,29 @@ void timerAction() {
     isPaused = true;
     stateIdx = PAUSE;
     //fade light to 0
-    refreshDisplay = true;
+    refreshDisplay = true;   
+      // LED no longer fading, switch direction
+    #ifdef LIGHT
+    direction = DIR_DOWN;
+    led.fade(0, FADE_TIME);
+    #endif
   }
+  
   void offPause() {
     isPaused = false;
     stateIdx = SJOFF;
     previousMillis = millis();
     //fade light to 140
+    #ifdef LIGHT
+    onLight();
+    #endif
   }
 #endif
+
+#ifdef LIGHT
+void onLight(){
+  direction = DIR_UP;
+   led.fade(50, FADE_TIME);
+  }
+#endif
+

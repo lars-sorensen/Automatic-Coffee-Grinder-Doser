@@ -27,7 +27,7 @@ static unsigned char beans_bits[] U8G_PROGMEM= {
 // cup
 #define cup_width 48
 #define cup_height 28
-static unsigned char cup_bits[] U8G_PROGMEM = {
+static unsigned char cup_bits[] U8G_PROGMEM = { 
   0xf8, 0xff, 0xff, 0xff, 0x1f, 0x00, 0xfe, 0xff, 0xff, 0xff, 0x3f, 0x00,
   0xfe, 0xff, 0xff, 0xff, 0x3f, 0x00, 0xfe, 0xff, 0xff, 0xff, 0xff, 0x0f,
   0xfe, 0xff, 0xff, 0xff, 0xff, 0x3f, 0xfe, 0xff, 0xff, 0xff, 0xff, 0x7f,
@@ -70,7 +70,7 @@ static unsigned char cup_big_bits[] U8G_PROGMEM = {
    0x80, 0xff, 0xff, 0xff, 0xff, 0x07, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff,
    0xff, 0x03, 0x00, 0x00, 0x00, 0xfe, 0xff, 0xff, 0xff, 0x03, 0x00, 0x00,
    0x00, 0xfc, 0xff, 0xff, 0xff, 0x01, 0x00, 0x00, 0x00, 0xf8, 0xff, 0xff,
-   0xff, 0x00, 0x00, 0x00, 0x00, 0xf0, 0xff, 0xff, 0x3f, 0x00, 0x00, 0x00 };
+   0xff, 0x00, 0x00, 0x00, 0x00, 0xf0, 0xff, 0xff, 0x3f, 0x00, 0x00, 0x00  };
 
 void DisplayNumber(char* display_unit){
   hundred = doseTime[doseIdx] / 100;                // calculating digit hundred
@@ -90,23 +90,16 @@ void DisplayNumber(char* display_unit){
 
 /* draw display */
 void drawDisplay() {
-  Serial.println("drawDisplay");
     u8g.firstPage();  
-    Serial.println("prut");
     do {
       draw();
-      Serial.println("DRAW");
     } 
     while( u8g.nextPage() );
-    Serial.println("drawDisplay end");
 }
   
 /* draw display */
 void draw() {
-  #ifdef DEBUG
-Serial.println("draw1234567890:");
-  Serial.println(stateIdx);
-#endif
+  
   // draw frame and box
   byte boxWidth = 0;
   if ( stateIdx == SJSET ) boxWidth = display_width;
@@ -123,31 +116,13 @@ Serial.println("draw1234567890:");
   
   switch (stateIdx) {
 
+  #ifdef screensaver
     case PAUSE:
-      u8g.setFont(u8g_font_fub11); 
-      u8g.setPrintPos(40, 45);
-      u8g.print("Pause");
-
-    
-//    if (doseIdx != DOSEM) {
-//    u8g.drawXBMP( 0, 25, cup_width, cup_height, cup_bits);  // small cup icon
-//    u8g.setColorIndex(0);
-//    u8g.setPrintPos(12, 48);
-//    u8g.print(doseIdx);
-//    u8g.setColorIndex(1);
-//    // show coffee portion
-//    u8g.setFont(u8g_font_fub11); 
-//    u8g.setPrintPos(64, 30);
-//    u8g.print(portion_name[doseIdx-1]);
-//    u8g.setFont(u8g_font_fub20);     
-//    // dose time
-//    u8g.setFont(u8g_font_fub20);
-//    u8g.setPrintPos( 64, 64); 
-//    DisplayNumber("s");
-//    break;
-//
-break;
-
+//      u8g.setFont(u8g_font_fub11); 
+//      u8g.setPrintPos(40, 45);
+//      u8g.print("Pause");
+    break;
+  #endif
 
 
   

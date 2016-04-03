@@ -80,9 +80,9 @@ void integerInput(){                // input integer for time and weight
 
 void chooser(byte max, byte min){   // input integer from max to min e.g. YES/NO, number of doses, QB-setup...
   int ADOSES;
-        #ifdef screensaver
-      previousMillis = millis();
-      #endif 
+  #ifdef screensaver
+    previousMillis = millis();
+  #endif 
   if ( setupStateIdx == INIT ) {
     ADOSES = totalPortions-1; 
   } else {

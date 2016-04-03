@@ -232,8 +232,8 @@ void do_dosecalc() {
     #ifdef DEBUGBUTTON                                                         // show me all times in log
       for (int i=1; i<=totalPortions; i++){
        Serial.print("Time: "); Serial.println(doseTime[i]);
-    }
-  #endif
+      }
+    #endif
   }
 }
 
@@ -241,6 +241,9 @@ void do_dosecalc() {
 void onRelay() {
   stateIdx = SJON;
   currentTime = doseTime[doseIdx];
+  #ifdef LIGHT
+  led.fade(180, 1000);
+  #endif
 }
 
 /* turn relay off */
